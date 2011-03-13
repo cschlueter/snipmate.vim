@@ -25,7 +25,7 @@ if !exists('snippets_dir')
 endif
 
 fun! MakeSnip(scope, trigger, content, ...)
-	let multisnip = 1 "a:0 && a:1 != ''
+	let multisnip = a:0 && a:1 != ''
 	let var = multisnip ? 's:multi_snips' : 's:snippets'
 	if !has_key({var}, a:scope) | let {var}[a:scope] = {} | endif
 	if !has_key({var}[a:scope], a:trigger)
@@ -226,25 +226,6 @@ fun s:ChooseSnippet(scope, trigger)
 	let snippet = []
 	let i = 1
 	for snip in s:multi_snips[a:scope][a:trigger]
-
-				let description = ''
-				let data = s:multi_snips[scope][trigger]
-				if len(data) == 1
-					let description = data[0][0]
-					if description == ''
-						" auto generate description
-						let content = data[0][1]
-						let description = matchstr(content, "[^ \t\n][^\n]*") " get first line of snippet
-						let description = substitute(description, '$\([0-9]\+\)', '\=substitute(description, ".*{".submatch(1).":\\([^}]*\\)}.*", "\\1", "")', 'g')
-						let description = substitute(description, '${[0-9]\+}', '', 'g')
-						let description = substitute(description, '${[0-9]\+:\([^}]*\)}', '\1', 'g')
-						let description = substitute(description, '`[^`]*`', '', 'g')
-					end
-				elseif len(data) > 1
-					let description = '...'
-				endif
-
-				let item = {'word': trigger, 'menu': description}
 		let snippet += [i.'. '.snip[0]]
 		let i += 1
 	endfor
@@ -271,9 +252,9 @@ fun! ShowAvailableSnips()
 		for trigger in triggers
 			for word in words
 				if word == ''
-					let matches += [item] " Show all matches if word is empty
+					let matches += [trigger] " Show all matches if word is empty
 				elseif trigger =~ '^'.word
-					let matches += [item]
+					let matches += [trigger]
 					let len = len(word)
 					if len > matchlen | let matchlen = len | endif
 				endif
